@@ -63,7 +63,6 @@ namespace Exercise1
             this.EncryptLabel.TabIndex = 1;
             this.EncryptLabel.Text = "Encrypter";
             this.EncryptLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.EncryptLabel.Click += new System.EventHandler(this.label1_Click);
             // 
             // richTextBox1
             // 
@@ -72,7 +71,6 @@ namespace Exercise1
             this.richTextBox1.Size = new System.Drawing.Size(280, 48);
             this.richTextBox1.TabIndex = 2;
             this.richTextBox1.Text = "";
-            this.richTextBox1.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
             // 
             // richTextBox2
             // 
@@ -109,7 +107,6 @@ namespace Exercise1
             this.DecryptLabel.TabIndex = 9;
             this.DecryptLabel.Text = "Decrypter";
             this.DecryptLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.DecryptLabel.Click += new System.EventHandler(this.label6_Click);
             // 
             // richTextBox4
             // 
