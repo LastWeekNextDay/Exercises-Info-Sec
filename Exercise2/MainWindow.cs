@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace Exercise1
+namespace Exercise2
 {
     public partial class MainWindow : Form
     {

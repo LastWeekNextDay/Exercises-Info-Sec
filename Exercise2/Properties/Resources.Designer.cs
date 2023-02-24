@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Exercise1.Properties
+namespace Exercise2.Properties
 {
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
@@ -45,7 +45,7 @@ namespace Exercise1.Properties
                 if ((resourceMan == null))
                 {
                     global::System.Resources.ResourceManager temp =
-                        new global::System.Resources.ResourceManager("Exercise1.Properties.Resources",
+                        new global::System.Resources.ResourceManager("Exercise2.Properties.Resources",
                             typeof(Resources).Assembly);
                     resourceMan = temp;
                 }

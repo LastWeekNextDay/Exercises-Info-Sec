@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Exercise1
+namespace Exercise2
 {
     partial class MainWindow
     {
