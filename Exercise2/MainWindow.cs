@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Security.Cryptography;
 
@@ -13,6 +14,7 @@ namespace Exercise2
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
+            // Set default values
             radioButton1.Checked = true;
             radioButton3.Checked = true;
             label1.Text = "";
@@ -39,59 +41,45 @@ namespace Exercise2
             // Create AES object
             var aes = Aes.Create();
 
-            // If key is less than 16 bytes, make it 16 bytes
-            if (richTextBox3.Text.Length < 16)
-            {
-                richTextBox3.Text = richTextBox3.Text.PadRight(16, ' ');
-            }
-            // if key is between 16 and 32 bytes, make it 32 bytes
-            else if (richTextBox3.Text.Length > 16 && richTextBox3.Text.Length < 32)
-            {
-                richTextBox3.Text = richTextBox3.Text.PadRight(32, ' ');
-            }
-            // if key is more than 32 bytes, make it 32 bytes
-            else if (richTextBox3.Text.Length > 32)
-            {
-                richTextBox3.Text = richTextBox3.Text.Substring(0, 32);
-            }
-
-            // Convert key to byte array
-            var key = System.Text.Encoding.UTF8.GetBytes(richTextBox3.Text);
-
-            // Set key
-            aes.Key = key;
-            
-            // Set padding
-            aes.Padding = PaddingMode.PKCS7;
+            // *** IV ***
 
             // if richtextbox4 is empty, generate IV and assign it to richTextBox4, else take IV from richtextbox4
             if (richTextBox4.Text == "" || richTextBox4.Text.Length == 0)
             {
                 // Generate IV
                 aes.GenerateIV();
-                // Convert IV to string
-                var iv = System.Text.Encoding.UTF8.GetString(aes.IV);
+
                 // Assign IV to richtextbox4
-                richTextBox4.Text = iv;
+                richTextBox4.Text = System.Text.Encoding.UTF8.GetString(aes.IV);
             }
             else
             {
-                // If richtextbox4 is less than BlockSize divided by 8, make it BlockSize divided by 8
-                if (richTextBox4.Text.Length < aes.BlockSize / 8)
+                // Check if richtextbox4 text length is divisible by BlockSize / 8
+                if (richTextBox4.Text.Length % (aes.BlockSize / 8) != 0)
                 {
-                    richTextBox4.Text = richTextBox4.Text.PadRight(aes.BlockSize / 8, ' ');
-                }
-                // If richtextbox4 is more than BlockSize divided by 8, make it BlockSize divided by 8
-                else if (richTextBox4.Text.Length > aes.BlockSize / 8)
-                {
-                    richTextBox4.Text = richTextBox4.Text.Substring(0, aes.BlockSize / 8);
+                    // Get value to add to richtextbox4 text length to make it divisible by BlockSize / 8
+                    var add = (aes.BlockSize / 8) - (richTextBox4.Text.Length % (aes.BlockSize / 8));
+
+                    // Make string the correct size
+                    richTextBox4.Text = AesUtil.StringToSize(richTextBox4.Text, richTextBox4.Text.Length + add);
                 }
 
-                // Convert IV to byte array
-                var iv = System.Text.Encoding.UTF8.GetBytes(richTextBox4.Text);
                 // Set IV
-                aes.IV = iv;
+                aes.IV = System.Text.Encoding.UTF8.GetBytes(richTextBox4.Text);
             }
+
+            // *** Key ***
+
+            // Make key the correct size
+            richTextBox3.Text = AesUtil.StringToSize(richTextBox3.Text, 32);
+
+            // Convert key to byte array
+            var keyBytes = AesUtil.StringToAesKey(richTextBox3.Text);
+
+            // Set key size
+            aes.KeySize = 256;
+
+            // *** Mode ***
 
             if (radioButton3.Checked)
             {
@@ -112,49 +100,36 @@ namespace Exercise2
             }
 
             // First, check which action is selected
-            if (radioButton1.Checked)
+            if (radioButton1.Checked) // Encrypt
             {
-                // Check if checkbox1 is checked, if it is, read the string from the file
-                if (checkBox1.Checked)
+                // Encrypt the string
+                var outputString = AesUtil.EncryptString(richTextBox1.Text, keyBytes, aes.IV, aes.Mode);
+
+                // Check if checkbox2 is checked, if it is, save the string to the file
+                if (checkBox2.Checked)
                 {
-                    // Read string from file
-                    richTextBox1.Text = System.IO.File.ReadAllText(GlobalVar.TakeFromPath);
+                    // Save string to file
+                    System.IO.File.WriteAllText(GlobalVar.SaveToPath, outputString);
                 }
 
-                // Convert string to bytes
-                var input = System.Text.Encoding.UTF8.GetBytes(richTextBox1.Text);
-
-                // Create encryptor
-                var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-                
-                // TODO: Encrypt the input
+                // Show string in richtextbox2
+                richTextBox2.Text = outputString;
             }
-            else if (radioButton2.Checked)
+            else if (radioButton2.Checked) // Decrypt
             {
-                // Check if checkbox1 is checked, if it is, read the string from the file
-                if (checkBox1.Checked)
+                // Decrypt the string
+                var outputString = AesUtil.DecryptString(richTextBox1.Text, keyBytes, aes.IV, aes.Mode);
+
+                // Check if checkbox2 is checked, if it is, save the string to the file
+                if (checkBox2.Checked)
                 {
-                    // Read string from file
-                    richTextBox1.Text = System.IO.File.ReadAllText(GlobalVar.TakeFromPath);
+                    // Save string to file
+                    System.IO.File.WriteAllText(GlobalVar.SaveToPath, outputString);
                 }
 
-                // Convert richtextbox1 to byte array
-                var input = System.Text.Encoding.UTF8.GetBytes(richTextBox1.Text);
-                // Create decryptor
-                var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-                
-                // TODO: Decrypt the input
+                // Show string in richtextbox2
+                richTextBox2.Text = outputString;
             }
-        }
-
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
-        {
-            //throw new System.NotImplementedException();
-        }
-
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
-        {
-            //throw new System.NotImplementedException();
         }
 
         private void checkBox1_CheckStateChanged(object sender, EventArgs e)
@@ -165,18 +140,26 @@ namespace Exercise2
                 OpenFileDialog openFileDialog = new OpenFileDialog();
                 openFileDialog.Filter = @"Text files (*.txt)|*.txt";
 
-                // If user selects a file, set file path to take string from to the selected file and assign the path to label1
+                // If user selects a file, set file path to take string from to the selected file,
+                // assign the path to label1, disable richTextBox1 from being edited and assign text inside file to
+                // richTextBox1
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     GlobalVar.TakeFromPath = openFileDialog.FileName;
                     label1.Text = GlobalVar.TakeFromPath;
+                    richTextBox1.ReadOnly = true;
+                    richTextBox1.BackColor = SystemColors.Control;
+                    richTextBox1.Text = System.IO.File.ReadAllText(GlobalVar.TakeFromPath);
                 }
-                // If user cancels, set file path to take string from to empty. uncheck the checkbox, and assign an empty string to label1
+                // If user cancels, set file path to take string from to empty. uncheck the checkbox,
+                // assign an empty string to label1 and enable richTextBox1 to be edited
                 else
                 {
                     GlobalVar.TakeFromPath = "";
                     checkBox1.Checked = false;
                     label1.Text = "";
+                    richTextBox1.ReadOnly = false;
+                    richTextBox1.BackColor = SystemColors.Window;
                 }
             }
             else
@@ -185,7 +168,16 @@ namespace Exercise2
                 GlobalVar.TakeFromPath = "";
                 // Assign an empty string to label1
                 label1.Text = "";
+                // Enable richTextBox1 to be edited
+                richTextBox1.ReadOnly = false;
+                // Set richtextbox1 background color to white
+                richTextBox1.BackColor = SystemColors.Window;
+                // Clear richtextbox1
+                richTextBox1.Text = "";
             }
+
+            // Update render of richtextbox1
+            richTextBox1.Refresh();
         }
 
         private void checkBox2_CheckStateChanged(object sender, EventArgs e)
@@ -196,13 +188,15 @@ namespace Exercise2
                 OpenFileDialog openFileDialog = new OpenFileDialog();
                 openFileDialog.Filter = @"Text files (*.txt)|*.txt";
 
-                // If user selects a file, set file path to save string to to the selected file and assign the path to label2
+                // If user selects a file, set file path to save string to to the selected file,
+                // assign the path to label2
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     GlobalVar.SaveToPath = openFileDialog.FileName;
                     label2.Text = GlobalVar.SaveToPath;
                 }
-                // If user cancels, set file path to save string to to empty. uncheck the checkbox, and assign an empty string to label2
+                // If user cancels, set file path to save string to to empty. uncheck the checkbox,
+                // assign an empty string to label2
                 else
                 {
                     GlobalVar.SaveToPath = "";

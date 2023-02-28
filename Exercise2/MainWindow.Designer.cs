@@ -66,6 +66,7 @@ namespace Exercise2
             // 
             // richTextBox1
             // 
+            this.richTextBox1.BackColor = System.Drawing.SystemColors.Window;
             this.richTextBox1.Location = new System.Drawing.Point(36, 114);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.Size = new System.Drawing.Size(280, 48);
@@ -118,7 +119,6 @@ namespace Exercise2
             this.radioButton2.TabStop = true;
             this.radioButton2.Text = "Decrypt";
             this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
             // 
             // radioButton1
             // 
@@ -129,7 +129,6 @@ namespace Exercise2
             this.radioButton1.TabStop = true;
             this.radioButton1.Text = "Encrypt";
             this.radioButton1.UseVisualStyleBackColor = true;
-            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
             // 
             // groupBox2
             // 
@@ -179,7 +178,7 @@ namespace Exercise2
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(207, 24);
             this.checkBox1.TabIndex = 10;
-            this.checkBox1.Text = "If decrypting, take from file.";
+            this.checkBox1.Text = "Take from file.";
             this.checkBox1.UseVisualStyleBackColor = true;
             this.checkBox1.CheckStateChanged += new System.EventHandler(this.checkBox1_CheckStateChanged);
             // 
@@ -190,7 +189,8 @@ namespace Exercise2
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(192, 24);
             this.checkBox2.TabIndex = 11;
-            this.checkBox2.Text = "If encrypting, put to file.";
+            this.checkBox2.Text = "Put to file.";
+            this.checkBox2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.checkBox2.UseVisualStyleBackColor = true;
             this.checkBox2.CheckStateChanged += new System.EventHandler(this.checkBox2_CheckStateChanged);
             // 
